@@ -16,10 +16,10 @@ TARGETS=linux.amd64 	\
 BINARIES=$(addprefix bin/$(PROJECT)-$(VERSION)., $(TARGETS))
 RELEASES=$(subst windows.amd64.tar.gz,windows.amd64.zip,$(foreach r,$(subst .exe,,$(TARGETS)),releases/$(PROJECT)-$(VERSION).$(r).tar.gz))
 
-LDFLAGS:=$(LDFLAGS) -ldflags "-X main.Version=$(VERSION) -X main.BuildDate=$(BUILD_DATE) -X main.GitHash=$(GIT_HASH)"
+LDFLAGS:=$(LDFLAGS) -ldflags "-X 'main.Version=$(VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.GitHash=$(GIT_HASH)'"
 
 $(PROJECT):
-	go build -v -o $@ ./cmd/$(PROJECT)
+	go build $(LDFLAGS) -v -o $@ ./cmd/$(PROJECT)
 
 ######################################################
 ## release related
@@ -34,7 +34,7 @@ clean:
 
 $(PROJECT): bin/$(PROJECT)
 bin/$(PROJECT): cmd/$(PROJECT) bin
-	go build -v -o $@ ./$<
+	go build $(LDFLAGS) -v -o $@ ./$<
 
 bin/$(PROJECT)-$(VERSION)%:
 	env GOARCH=$(subst .,,$(suffix $(subst .exe,,$@))) \
